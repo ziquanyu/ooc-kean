@@ -1,6 +1,6 @@
 use ooc-math
 use ooc-draw-gpu
-import OpenGLES3Map
+import OpenGLES3Map, Debug
 OpenGLES3MapPack: abstract class extends OpenGLES3Map {
 	imageWidth: Int { get set }
 	channels: Int { get set }
@@ -14,9 +14,8 @@ OpenGLES3MapPack: abstract class extends OpenGLES3Map {
 		offset := (2.0f / channels - 0.5f) / this imageWidth
 		this program setUniform("offset", offset)
 	}
-	vertexSource: static String ="
-		#version 300 es
-		precision mediump float;
+	vertexSource: static String ="#version 300 es
+		precision highp float;
 		uniform float offset;
 		layout(location = 0) in vec2 vertexPosition;
 		layout(location = 1) in vec2 textureCoordinate;
@@ -33,8 +32,7 @@ OpenGLES3MapPackMonochrome: class extends OpenGLES3MapPack {
 		texelOffset := 1.0f / this imageWidth
 		this program setUniform("texelOffset", texelOffset)
 	}
-	fragmentSource: static String ="
-		#version 300 es
+	fragmentSource: static String ="#version 300 es
 		precision mediump float;
 		uniform sampler2D texture0;
 		uniform float texelOffset;
@@ -56,8 +54,7 @@ OpenGLES3MapPackUv: class extends OpenGLES3MapPack {
 		texelOffset := 1.0f / this imageWidth
 		this program setUniform("texelOffset", texelOffset)
 	}
-	fragmentSource: static String ="
-		#version 300 es
+	fragmentSource: static String ="#version 300 es
 		precision mediump float;
 		uniform sampler2D texture0;
 		uniform float texelOffset;
@@ -76,11 +73,11 @@ OpenGLES3MapUnpack: abstract class extends OpenGLES3Map {
 	init: func (fragmentSource: String, context: GpuContext) { super(This vertexSource, fragmentSource, context) }
 	use: override func {
 		super()
+
 		this program setUniform("texture0", 0)
 		this program setUniform("targetWidth", this targetSize width)
 	}
-	vertexSource: static String ="
-		#version 300 es
+	vertexSource: static String ="#version 300 es
 		precision mediump float;
 		uniform float startY;
 		uniform float scaleX;
@@ -103,8 +100,7 @@ OpenGLES3MapUnpackRgbaToMonochrome: class extends OpenGLES3MapUnpack {
 		this program setUniform("scaleY", scaleY)
 		this program setUniform("startY", 0.0f)
 	}
-	fragmentSource: static String ="
-		#version 300 es
+	fragmentSource: static String ="#version 300 es
 		precision mediump float;
 		uniform sampler2D texture0;
 		uniform int targetWidth;
@@ -131,8 +127,7 @@ OpenGLES3MapUnpackRgbaToUv: class extends OpenGLES3MapUnpack {
 		scaleY := 1.0f - startY
 		this program setUniform("scaleY", scaleY)
 	}
-	fragmentSource: static String ="
-		#version 300 es
+	fragmentSource: static String ="#version 300 es
 		precision mediump float;
 		uniform sampler2D texture0;
 		uniform int targetWidth;

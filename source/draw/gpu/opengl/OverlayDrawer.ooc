@@ -27,8 +27,7 @@ OpenGLES3MapLines: class extends OpenGLES3MapDefault {
 		super()
 		this program setUniform("color", this color)
 	}
-	fragmentSource: static String ="
-		#version 300 es\n
+	fragmentSource: static String ="#version 300 es\n
 		precision highp float;\n
 		uniform vec3 color;\n
 		out vec4 outColor;\n
@@ -49,8 +48,7 @@ OpenGLES3MapPoints: class extends OpenGLES3Map {
 		this transform to3DTransformArray(reference[0]&)
 		this program setUniform("transform", reference[0]&)
 	}
-	vertexSource: static String ="
-		#version 300 es\n
+	vertexSource: static String ="#version 300 es\n
 		precision highp float;\n
 		uniform float pointSize;\n
 		uniform mat4 transform;\n
@@ -59,8 +57,7 @@ OpenGLES3MapPoints: class extends OpenGLES3Map {
 			gl_PointSize = pointSize;\n
 			gl_Position = transform * vec4(vertexPosition.x, vertexPosition.y, 0, 1);\n
 		}\n"
-	fragmentSource: static String ="
-		#version 300 es\n
+	fragmentSource: static String ="#version 300 es\n
 		precision highp float;\n
 		uniform vec3 color;\n
 		out vec4 outColor;\n
