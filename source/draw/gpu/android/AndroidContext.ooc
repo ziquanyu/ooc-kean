@@ -122,19 +122,22 @@ AndroidContext: class extends OpenGLES3Context {
 		(imageResult, fenceResult)
 	}
 	createAndroidRgba: func (size: IntSize2D) -> AndroidRgba { AndroidRgba new(size, this _backend _eglDisplay) }
+
 	createBgra: func ~fromGraphicBuffer (buffer: GraphicBuffer) -> OpenGLES3Bgra {
 		androidTexture := AndroidRgba new(buffer, this _backend _eglDisplay)
 		result := OpenGLES3Bgra new(androidTexture, this)
 		result _recyclable = false
 		result
 	}
-	unpackBgraToYuv420Semiplanar: func (source: GpuBgra, targetSize: IntSize2D) -> GpuYuv420Semiplanar {
+	unpackBgraToYuv420Semiplanar: func (source: GpuBgra, targetSize: IntSize2D, padding: Float) -> GpuYuv420Semiplanar {
 		target := this createYuv420Semiplanar(targetSize) as GpuYuv420Semiplanar
-		this _unpackRgbaToMonochrome targetSize = target y size
+		this _unpackRgbaToMonochrome targetSize = IntSize2D new(target y size width, target y size height)
 		this _unpackRgbaToMonochrome sourceSize = source size
-		target y canvas draw(source, _unpackRgbaToMonochrome, IntBox2D new(target y size))
+		target y canvas draw(source, this _unpackRgbaToMonochrome, IntBox2D new(target y size))
+
 		this _unpackRgbaToUv targetSize = target uv size
 		this _unpackRgbaToUv sourceSize = source size
+		this _unpackRgbaToUv offsetX = padding
 		target uv canvas draw(source, _unpackRgbaToUv, IntBox2D new(target uv size))
 		target
 	}
@@ -168,8 +171,8 @@ AndroidContextManager: class extends GpuContextManager {
 		result
 	}
 	createBgra: func ~fromGraphicBuffer (buffer: GraphicBuffer) -> OpenGLES3Bgra { this currentContext createBgra(buffer) }
-	unpackBgraToYuv420Semiplanar: func (source: GpuBgra, targetSize: IntSize2D) -> GpuYuv420Semiplanar {
-		this currentContext unpackBgraToYuv420Semiplanar(source, targetSize)
+	unpackBgraToYuv420Semiplanar: func (source: GpuBgra, targetSize: IntSize2D, padding: Float) -> GpuYuv420Semiplanar {
+		this currentContext unpackBgraToYuv420Semiplanar(source, targetSize, padding)
 	}
 	alignWidth: override func (width: Int, align := AlignWidth Nearest) -> Int { GraphicBuffer alignWidth(width, align) }
 	isAligned: override func (width: Int) -> Bool { GraphicBuffer isAligned(width) }

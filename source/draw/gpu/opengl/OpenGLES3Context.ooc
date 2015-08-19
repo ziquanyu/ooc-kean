@@ -192,13 +192,15 @@ OpenGLES3Context: class extends GpuContext {
 	}
 	update: func { this _backend swapBuffers() }
 	setViewport: func (viewport: IntBox2D) { Fbo setViewport(viewport left, viewport top, viewport width, viewport height) }
-	packToRgba: func (source: GpuImage, target: GpuBgra, viewport: IntBox2D) {
+	packToRgba: func (source: GpuImage, target: GpuBgra, viewport: IntBox2D, padding: Float) {
 		map := match(source) {
 			case source: GpuMonochrome => this _packMonochrome
 			case source: GpuUv => this _packUv
 		} as OpenGLES3MapPack
 		map imageWidth = source size width
 		map channels = source channels
+		map offsetX = padding
+		map sourceHeight = target size height
 		target canvas draw(source, map, viewport)
 	}
 	createFence: func -> GpuFence { OpenGLES3Fence new() }

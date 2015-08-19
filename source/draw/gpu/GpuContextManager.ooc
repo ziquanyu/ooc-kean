@@ -86,6 +86,6 @@ GpuContextManager: abstract class extends GpuContext {
 	toRasterAsync: override func (gpuImage: GpuImage) -> (RasterImage, GpuFence) { this _getContext() toRasterAsync(gpuImage) }
 	setViewport: func (viewport: IntBox2D) { this _getContext() setViewport(viewport) }
 	getMap: func (gpuImage: GpuImage, mapType := GpuMapType defaultmap) -> GpuMap { this _getContext() getMap(gpuImage, mapType) }
-	packToRgba: func (source: GpuImage, target: GpuBgra, viewport: IntBox2D) { this _getContext() packToRgba(source, target, viewport) }
+	packToRgba: func (source: GpuImage, target: GpuBgra, viewport: IntBox2D, padding: Float) { this _getContext() packToRgba(source, target, viewport, padding) }
 	createFence: func -> GpuFence { this _getContext() createFence() }
 }
