@@ -132,7 +132,7 @@ OpenGLES3MapUnpackRgbaToMonochrome: class extends OpenGLES3MapUnpack {
 		}"
 }
 OpenGLES3MapUnpackRgbaToUv: class extends OpenGLES3MapUnpack {
-	offsetX: Float { get set }
+	offsetX := 0.0f
 	init: func (context: GpuContext) { super(This fragmentSource, context) }
 	use: override func {
 		super()
