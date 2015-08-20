@@ -4,7 +4,7 @@ import OpenGLES3Map, Debug
 OpenGLES3MapPack: abstract class extends OpenGLES3Map {
 	imageWidth: Int { get set }
 	channels: Int { get set }
-	offsetX: Float { get set }
+	offsetX:= 0.0f
 	sourceHeight: Int { get set }
 	init: func (fragmentSource: String, context: GpuContext) {
 		super(This vertexSource, fragmentSource, context)
@@ -75,24 +75,7 @@ OpenGLES3MapPackUv: class extends OpenGLES3MapPack {
 			vec2 texelOffsetCoord = vec2(texelOffset, 0);
 			vec2 rg = texture(texture0, shiftedCoor).rg;
 			vec2 ba = texture(texture0, shiftedCoor + texelOffsetCoord).rg;
-			if(shiftedCoor.y > 0.666 && shiftedCoor.y < 0.7) {
-				outColor = vec4(shiftedCoor.x);
-			}
-			else if(shiftedCoor.y > 0.01 && shiftedCoor.y < 0.05) {
-				outColor = vec4(1.0 - shiftedCoor.x);
-			}
-			else if(shiftedCoor.y > 0.95 && shiftedCoor.y < 0.99) {
-				outColor = vec4(1.0 - shiftedCoor.x);
-			}
-			else if(shiftedCoor.y <= 0.004) {
-				outColor = vec4(1.0);
-			}
-			else if(shiftedCoor.y >= 0.997) {
-				outColor = vec4(shiftedCoor.x);
-			}
-			else {
-				outColor = vec4(rg.x, rg.y, ba.x, ba.y);
-			}
+			outColor = vec4(rg.x, rg.y, ba.x, ba.y);
 		}"
 }
 OpenGLES3MapUnpack: abstract class extends OpenGLES3Map {
