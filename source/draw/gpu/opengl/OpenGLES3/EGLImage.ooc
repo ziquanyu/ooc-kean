@@ -18,6 +18,8 @@ use ooc-base
 import include/egl
 import include/gles
 import Texture
+import DebugGL
+
 EGLImage: class extends Texture {
 	_eglBackend: Pointer
 	_eglDisplay: Pointer
@@ -40,7 +42,12 @@ EGLImage: class extends Texture {
 	bindSibling: func {
 		eglImageAttributes := [EGL_IMAGE_PRESERVED_KHR, EGL_FALSE, EGL_NONE] as Int*
 		this _eglBackend = This _eglCreateImageKHR(this _eglDisplay, EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID, this _nativeBuffer, eglImageAttributes)
+		Debug print(".........................before _eglBackend")
+		printGlError()
+		Debug print(".........................after _eglBackend")
 		This _glEGLImageTargetTexture2DOES(this _target, this _eglBackend)
+		printGlError()
+		Debug print(".........................after _glEGLImageTargetTexture2DOES")
 	}
 
 	_eglCreateImageKHR: static Func(Pointer, Pointer, UInt, Pointer, Int*) -> Pointer
@@ -58,7 +65,7 @@ EGLImage: class extends Texture {
 	create: static func(type: TextureType, width: Int, height: Int, nativeBuffer: Pointer, display: Pointer) -> This {
 		This initialize()
 		result: This = null
-		if (type == TextureType rgba || type == TextureType rgb || type == TextureType bgr || type == TextureType rgb || type == TextureType yv12) {
+		if (type == TextureType monochrome || type == TextureType rgba || type == TextureType rgb || type == TextureType bgr || type == TextureType rgb || type == TextureType yv12) {
 			result = This new(type, width, height, nativeBuffer, display)
 		}
 		result

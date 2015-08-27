@@ -18,16 +18,17 @@ use ooc-draw-gpu
 use ooc-math
 use ooc-opengl
 use ooc-base
-import GraphicBuffer
+import GraphicBuffer, GraphicBufferYv12
 
 AndroidTexture: abstract class extends GpuTexture {
 	backend: EGLImage { get { this _backend as EGLImage } }
 	stride ::= this _buffer pixelStride * this _channels
 	_channels: UInt
 	_buffer: GraphicBuffer
+	/*_buffer: GraphicBufferYv12*/
 	init: func (size: IntSize2D, =_buffer, eglImage: EGLImage, =_channels) {
 		super(eglImage, size)
-	}
+}
 	free: override func {
 		this backend free()
 		this _buffer free()
@@ -55,5 +56,30 @@ AndroidRgba: class extends AndroidTexture {
 	init: func ~fromGraphicBuffer (buffer: GraphicBuffer, eglDisplay: Pointer) {
 		eglImage := EGLImage create(TextureType rgba, buffer size width, buffer size height, buffer nativeBuffer, eglDisplay)
 		super(IntSize2D new(eglImage width, eglImage height), buffer, eglImage, 4)
+	}
+}
+
+AndroidY8: class extends AndroidTexture {
+	init: func ~allocate (size: IntSize2D, eglDisplay: Pointer) {
+		gb := GraphicBuffer new(size, GraphicBufferFormat Y8, GraphicBufferUsage Texture)
+		egl := EGLImage create(TextureType monochrome, size width, size height, gb nativeBuffer, eglDisplay)
+		super(size, gb, egl, 1)
+	}
+	init: func ~fromGraphicBuffer (buffer: GraphicBuffer, eglDisplay: Pointer) {
+		eglImage := EGLImage create(TextureType monochrome, buffer size width, buffer size height, buffer nativeBuffer, eglDisplay)
+		super(IntSize2D new(eglImage width, eglImage height), buffer, eglImage, 1)
+	}
+}
+
+AndroidYv12: class extends AndroidTexture {
+	init: func ~allocate (size: IntSize2D, eglDisplay: Pointer) {
+		gb := GraphicBuffer new(size, GraphicBufferFormat Yv12, GraphicBufferUsage Texture)
+		egl := EGLImage create(TextureType yv12, size width, size height, gb nativeBuffer, eglDisplay)
+		super(size, gb, egl, 1)
+	}
+	init: func ~fromGraphicBuffer (buffer: GraphicBuffer, eglDisplay: Pointer) {
+		eglImage := EGLImage create(TextureType yv12, buffer size width, buffer size height, buffer nativeBuffer, eglDisplay)
+		super(IntSize2D new(eglImage width, eglImage height), buffer, eglImage, 1)
+		/*texture new(TextureType yv12, buffer size width, buffer size height)*/
 	}
 }

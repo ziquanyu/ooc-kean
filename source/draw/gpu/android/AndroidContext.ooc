@@ -19,7 +19,7 @@ use ooc-opengl
 use ooc-draw
 use ooc-math
 use ooc-base
-import AndroidTexture, GraphicBuffer
+import AndroidTexture, GraphicBuffer, GraphicBufferYv12
 import threading/Thread
 import math
 AndroidContext: class extends OpenGLES3Context {
@@ -129,12 +129,47 @@ AndroidContext: class extends OpenGLES3Context {
 		result _recyclable = false
 		result
 	}
+	createY8: func ~fromGraphicBuffer (buffer: GraphicBuffer, size: IntSize2D) -> OpenGLES3Monochrome {
+		androidTexture := AndroidY8 new(buffer, this _backend _eglDisplay)
+		result := OpenGLES3Monochrome new(androidTexture, size, this)
+		result _recyclable = false
+		result
+	}
+	createYv12: func ~fromGraphicBuffer (buffer: GraphicBuffer, size: IntSize2D) -> GraphicBufferYv12 {
+		androidTexture := AndroidYv12 new(buffer, this _backend _eglDisplay)
+		result := GraphicBufferYv12 new(androidTexture, size, size width, size area)
+		result _recyclable = false
+		result
+	}
 	unpackBgraToYuv420Semiplanar: func (source: GpuBgra, targetSize: IntSize2D, padding: Float) -> GpuYuv420Semiplanar {
 		target := this createYuv420Semiplanar(targetSize) as GpuYuv420Semiplanar
+		/*target4k := this createYuv420Semiplanar(IntSize2D new(3840,2160)) as GpuYuv420Semiplanar*/
+		/*target0 := this createYuv420Semiplanar(IntSize2D new(1920,1080)) as GpuYuv420Semiplanar
+		target1 := this createYuv420Semiplanar(IntSize2D new(1920,1080)) as GpuYuv420Semiplanar
+		target2 := this createYuv420Semiplanar(IntSize2D new(1920,1080)) as GpuYuv420Semiplanar
+		target3 := this createYuv420Semiplanar(IntSize2D new(1920,1080)) as GpuYuv420Semiplanar*/
 		this _unpackRgbaToMonochrome targetSize = IntSize2D new(target y size width, target y size height)
 		this _unpackRgbaToMonochrome sourceSize = source size
 		target y canvas draw(source, this _unpackRgbaToMonochrome, IntBox2D new(target y size))
 
+/*target4k y canvas draw(source)
+target4k uv canvas draw(source)
+target4k free()*/
+
+
+/*target0 y canvas draw(source)
+target0 uv canvas draw(source)
+target1 y canvas draw(source)
+target1 uv canvas draw(source)
+target2 y canvas draw(source)
+target2 uv canvas draw(source)
+target3 y canvas draw(source)
+target3 uv canvas draw(source)
+
+target0 free()
+target1 free()
+target2 free()
+target3 free()*/
 		this _unpackRgbaToUv targetSize = target uv size
 		this _unpackRgbaToUv sourceSize = source size
 		this _unpackRgbaToUv offsetX = padding
@@ -174,6 +209,9 @@ AndroidContextManager: class extends GpuContextManager {
 	unpackBgraToYuv420Semiplanar: func (source: GpuBgra, targetSize: IntSize2D, padding: Float) -> GpuYuv420Semiplanar {
 		this currentContext unpackBgraToYuv420Semiplanar(source, targetSize, padding)
 	}
+	createY8: func ~fromGraphicBuffer (buffer: GraphicBuffer, size: IntSize2D) -> OpenGLES3Monochrome { this currentContext createY8(buffer, size) }
+	createYv12: func ~fromGraphicBuffer (buffer: GraphicBufferYv12, size: IntSize2D) -> GraphicBufferYv12 { this currentContext createY12(buffer, size) }
+
 	alignWidth: override func (width: Int, align := AlignWidth Nearest) -> Int { GraphicBuffer alignWidth(width, align) }
 	isAligned: override func (width: Int) -> Bool { GraphicBuffer isAligned(width) }
 }

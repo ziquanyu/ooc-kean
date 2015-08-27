@@ -20,6 +20,7 @@ import math
 GraphicBufferFormat: enum {
 	Rgba8888 = 1
 	Yv12
+	Y8
 }
 GraphicBufferUsage: enum (*2) {
 	ReadNever = 1
