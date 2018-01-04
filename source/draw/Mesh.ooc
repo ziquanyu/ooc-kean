@@ -6,7 +6,12 @@
  * of the MIT license.  See the LICENSE file for details.
  */
 
+use geometry
+
 Mesh: abstract class {
 	init: func
 	draw: abstract func
+	update: virtual func (vertices: FloatPoint3D[], textureCoordinates: FloatPoint2D[]) {
+		Debug error("Mesh update unimplemented for class %s" format(this class name))
+	}
 }
